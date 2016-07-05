@@ -1,0 +1,6 @@
+channel 1 received 15 jobs
+channel 2 received 17 jobs
+channel 3 received 19 jobs
+channel 4 received 30 jobs
+channel 5 received 18 jobs
+channel None received 1 jobs
