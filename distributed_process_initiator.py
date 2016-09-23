@@ -45,7 +45,7 @@ QueueManager.register('get_result_queue4', callable=lambda: result_queue4)
 QueueManager.register('get_task_queue5', callable=lambda: task_queue5)
 QueueManager.register('get_result_queue5', callable=lambda: result_queue5)
 
-manager = QueueManager(address=('', 5000), authkey='zhanghao')
+manager = QueueManager(address=('', 5000), authkey='jingjing')
 manager.start()
 task1 = manager.get_task_queue1()
 result1 = manager.get_result_queue1()

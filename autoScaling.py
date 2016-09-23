@@ -44,7 +44,7 @@ def listSecurityGroups():
 	rs = conn.get_all_security_groups()
 	return [item.name for item in rs]
 	
-def createMaster(imageID = 'ami-5189a661',Key = 'Haozhang_ubuntu',insType = 't2.micro'):
+def createMaster(imageID = 'ami-5189a661',Key = 'jingjing_ubuntu',insType = 't2.micro'):
 	default_userdata = """#!/bin/sh
 sudo apt-get install git
 git clone https://github.com/sunnyyeti/CloudComputing.git
@@ -55,7 +55,7 @@ sudo /etc/init.d/apache2 start"""
 	associatedGroup.append(getSecurityGroup('master'))
 	conn.run_instances(imageID,key_name = Key, instance_type= insType,security_groups = associatedGroup,user_data=default_userdata)
 	
-def createSlave(imageID = 'ami-5189a661',Key = 'Haozhang_ubuntu',insType = 't2.micro',id = None):
+def createSlave(imageID = 'ami-5189a661',Key = 'jingjing_ubuntu',insType = 't2.micro',id = None):
 	assert 1<=id<=5
 	filename = '''distributedProcessReceiver'''+str(id)+'''.py'''
 	slavedata = '''#!/bin/sh

@@ -6,7 +6,7 @@ import boto3
 
 available_dict = {}
 
-def createSlave(imageID = 'ami-5189a661',Key = 'Haozhang_ubuntu',insType = 't2.micro',id = None):
+def createSlave(imageID = 'ami-5189a661',Key = 'jingjing_ubuntu',insType = 't2.micro',id = None):
 	assert 1<=id<=5
 	filename = '''distributedProcessReceiver'''+str(id)+'''.py'''
 	slavedata = '''#!/bin/sh

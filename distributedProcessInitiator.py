@@ -11,7 +11,7 @@ import boto3
 task_list={}
 available_dict = {1:1,2:2,3:3,4:4,5:5}
 cache = {'totalcheck':0,'totalcount':0}
-def createSlave(imageID = 'ami-5189a661',Key = 'Haozhang_ubuntu',insType = 't2.micro',id = None):
+def createSlave(imageID = 'ami-5189a661',Key = 'jingjing_ubuntu',insType = 't2.micro',id = None):
 	global task_list,available_dict
 	assert 1<=id<=5
 	filename = '''distributedProcessReceiver'''+str(id)+'''.py'''
@@ -271,7 +271,7 @@ QueueManager.register('get_result_queue4', callable=lambda: result_queue4)
 QueueManager.register('get_task_queue5', callable=lambda: task_queue5)
 QueueManager.register('get_result_queue5', callable=lambda: result_queue5)
 
-manager = QueueManager(address=('', 5000), authkey='zhanghao')
+manager = QueueManager(address=('', 5000), authkey='jingjing')
 manager.start()
 task1 = manager.get_task_queue1()
 result1 = manager.get_result_queue1()

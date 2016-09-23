@@ -28,7 +28,7 @@ QueueManager.register('get_result_queue1')
 server_addr = '52.27.55.20'
 print('Connect to server %s...' % server_addr)
 
-m = QueueManager(address=(server_addr, 5000), authkey='zhanghao')
+m = QueueManager(address=(server_addr, 5000), authkey='jingjing')
 connec = True
 while connec:
 	try:
