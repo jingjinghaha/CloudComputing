@@ -67,9 +67,8 @@ class Worker(object):
 if __name__ == "__main__":
     args = parser.parse_args()
 
-    # ray.init(redis_address=args.redis_address)
-    ray.init()
-
+    ray.init(redis_address=args.redis_address)
+    
     # Create a parameter server.
     net = model.SimpleCNN()
     # net.load_model()
