@@ -108,7 +108,7 @@ class SimpleCNN(object):
         return list(weights.keys()), list(weights.values())
 
     def save_model(self, i):
-        if (i+1) % 50 == 0:
+        if (i+1) % 1 == 0:
             save_path = self.saver.save(self.sess, './model/model.ckpt')
             print("Model saved in path: {}".format(save_path))
             os.system('aws s3 sync model s3://mloncloud/model/')
