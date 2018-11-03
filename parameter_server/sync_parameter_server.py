@@ -52,12 +52,12 @@ class Worker(object):
         # Measure accuracy of the epoch
         test_xs, test_ys = self.mnist.test.next_batch(1000)
         accuracy = self.net.compute_accuracy(test_xs, test_ys)
-        # print("Worker {} : Iteration {} : accuracy is {}".format(self.worker_index, self.curritr, accuracy))
+        print("Worker {} : Iteration {} : accuracy is {}".format(self.worker_index, self.curritr, accuracy))
         self.curritr = self.curritr + 1
         tic = time.time()
         gradients = self.net.compute_gradients(xs, ys)
         toc = time.time()
-        # print("Time of computing gradients on worker {}: {}".format(self.worker_index, str(toc - tic)))
+        print("Time of computing gradients on worker {}: {}".format(self.worker_index, str(toc - tic)))
         return gradients
 
     def getWorkerIndex(self):
@@ -67,7 +67,8 @@ class Worker(object):
 if __name__ == "__main__":
     args = parser.parse_args()
 
-    ray.init(redis_address=args.redis_address)
+    # ray.init(redis_address=args.redis_address)
+    ray.init()
 
     # Create a parameter server.
     net = model.SimpleCNN()
@@ -132,8 +133,8 @@ if __name__ == "__main__":
         straggler_worker_IDs = [fobj_to_workerID_dict[stragglerfn_id] for stragglerfn_id in straggler_function_ids]
 
         toc = time.time()
-        # print("Iteration {} : accuracy is {} stragglers were {} ".format(i, accuracy, straggler_worker_IDs))
-        # print("Time to finish Iteration {}: {}".format(i, str(toc-tic)))
+        print("Iteration {} : accuracy is {} stragglers were {} ".format(i, accuracy, straggler_worker_IDs))
+        print("Time to finish Iteration {}: {}".format(i, str(toc-tic)))
         print(accuracy)
         i += 1 #next iteration
 
