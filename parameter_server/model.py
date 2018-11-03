@@ -109,15 +109,15 @@ class SimpleCNN(object):
 
     def save_model(self, i):
         if (i+1) % 1 == 0:
-            save_path = self.saver.save(self.sess, './model/model.ckpt')
+            save_path = self.saver.save(self.sess, '/model/model.ckpt')
             print("Model saved in path: {}".format(save_path))
-            os.system('aws s3 sync model s3://mloncloud/model/')
+            os.system('aws s3 sync /model s3://mloncloud/model/')
 
     def load_model(self):
-        os.system('aws s3 sync s3://mloncloud/model model')
-        if os.path.exists('./model/model.ckpt.meta'):
-            new_saver = tf.train.import_meta_graph('./model/model.ckpt.meta')
-            new_saver.restore(self.sess, tf.train.latest_checkpoint('./model/'))
+        os.system('aws s3 sync s3://mloncloud/model /model')
+        if os.path.exists('/model/model.ckpt.meta'):
+            new_saver = tf.train.import_meta_graph('/model/model.ckpt.meta')
+            new_saver.restore(self.sess, tf.train.latest_checkpoint('/model/'))
 
 def deepnn(x):
     """deepnn builds the graph for a deep net for classifying digits.
