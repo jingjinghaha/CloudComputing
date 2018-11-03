@@ -97,7 +97,7 @@ if __name__ == "__main__":
     if p == 0:
         k = 0
     elif p == 1:
-        k = 2
+        k = 4
     else:
         k = 8
 
