@@ -72,7 +72,7 @@ if __name__ == "__main__":
 
     # Create a parameter server.
     net = model.SimpleCNN()
-    net.load_model()
+    # net.load_model()
 
     ps = ParameterServer.remote(1e-4 * args.num_workers)
     set_weight = ps.set_weights.remote(net.variables.get_flat())
