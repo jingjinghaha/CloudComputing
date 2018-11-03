@@ -115,9 +115,9 @@ class SimpleCNN(object):
 
     def load_model(self):
         os.system('aws s3 sync s3://mloncloud/model model')
-        new_saver = tf.train.import_meta_graph('./model/model.ckpt.meta')
-        new_saver.restore(self.sess, tf.train.latest_checkpoint('./model/'))
-
+        if os.path.exists('./model/model.ckpt.meta'):
+            new_saver = tf.train.import_meta_graph('./model/model.ckpt.meta')
+            new_saver.restore(self.sess, tf.train.latest_checkpoint('./model/'))
 
 def deepnn(x):
     """deepnn builds the graph for a deep net for classifying digits.
