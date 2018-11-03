@@ -11,9 +11,9 @@ import model
 
 parser = argparse.ArgumentParser(description="Run the synchronous parameter "
                                              "server example.")
-parser.add_argument("--num-workers", default=4, type=int,
+parser.add_argument("--num-workers", default=8, type=int,
                     help="The number of workers to use.")
-parser.add_argument("--backups", default=2, type=int,
+parser.add_argument("--backups", default=4, type=int,
                     help="The no. of stragglers, we will ignore results from them.")
 parser.add_argument("--redis-address", default=None, type=str,
                     help="The Redis address of the cluster.")
@@ -90,6 +90,16 @@ if __name__ == "__main__":
     # current_weights = ps.get_weights.remote()
     current_weights = net.variables.get_flat()
 
+    k = args.num_workers-backups
+
+    p = np.random.randint(0,3)
+    if p == 0:
+        k = 0
+    elif p == 1:
+        k = 2
+    else:
+        k = 8
+
     tic = time.time()
     while i<=1000:
         # Compute and apply gradients.
@@ -105,7 +115,7 @@ if __name__ == "__main__":
             fobj_to_workerID_dict[remotefn] = worker_id
 
 
-        fast_function_ids, straggler_function_ids  = ray.wait(compute_tasks, num_returns=args.num_workers-backups)
+        fast_function_ids, straggler_function_ids  = ray.wait(compute_tasks, num_returns=k)
         fast_gradients = [ray.get(fast_id) for fast_id in fast_function_ids]
 
         # Discard results from stragglers
