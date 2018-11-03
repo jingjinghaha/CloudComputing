@@ -101,8 +101,8 @@ if __name__ == "__main__":
     else:
         k = 8
 
-    tic = time.time()
     while i<=1000:
+        tic = time.time()
         # Compute and apply gradients.
         # compute_tasks = [worker.compute_gradients.remote(current_weights) for worker in workers]
 
@@ -115,27 +115,30 @@ if __name__ == "__main__":
             compute_tasks.append(remotefn)
             fobj_to_workerID_dict[remotefn] = worker_id
 
+        if k != 0:
+            fast_function_ids, straggler_function_ids  = ray.wait(compute_tasks, num_returns=k)
+            fast_gradients = [ray.get(fast_id) for fast_id in fast_function_ids]
 
-        fast_function_ids, straggler_function_ids  = ray.wait(compute_tasks, num_returns=k)
-        fast_gradients = [ray.get(fast_id) for fast_id in fast_function_ids]
+            current_weights = ps.apply_gradients.remote(*fast_gradients)
 
-        # Discard results from stragglers
+            # Evaluate the current model.
+            net.variables.set_flat(ray.get(current_weights))
+            test_xs, test_ys = mnist.test.next_batch(1000)
+            accuracy = net.compute_accuracy(test_xs, test_ys)
+            net.save_model(i)
 
-        current_weights = ps.apply_gradients.remote(*fast_gradients)
+            #retrieve list of straggling workers  from the straggler function list
+            straggler_worker_IDs = [fobj_to_workerID_dict[stragglerfn_id] for stragglerfn_id in straggler_function_ids]
 
-        # Evaluate the current model.
-        net.variables.set_flat(ray.get(current_weights))
-        test_xs, test_ys = mnist.test.next_batch(1000)
-        accuracy = net.compute_accuracy(test_xs, test_ys)
-        net.save_model(i)
+            toc = time.time()
+            print("Iteration {} : accuracy is {} stragglers were {} ".format(i, accuracy, straggler_worker_IDs))
+            print("Time to finish Iteration {}: {}".format(i, str(toc-tic)))
+            print(accuracy)
+        else:
+            print("Wait 0 work this iteration")
+            toc = time.time()
+            print("Time to finish Iteration {}: {}".format(i, str(toc-tic)))
 
-        #retrieve list of straggling workers  from the straggler function list
-        straggler_worker_IDs = [fobj_to_workerID_dict[stragglerfn_id] for stragglerfn_id in straggler_function_ids]
-
-        toc = time.time()
-        print("Iteration {} : accuracy is {} stragglers were {} ".format(i, accuracy, straggler_worker_IDs))
-        print("Time to finish Iteration {}: {}".format(i, str(toc-tic)))
-        print(accuracy)
         i += 1 #next iteration
 
         fast_function_ids, straggler_function_ids  = ray.wait(compute_tasks, num_returns=args.num_workers)
