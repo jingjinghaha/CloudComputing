@@ -93,14 +93,14 @@ if __name__ == "__main__":
     k = args.num_workers-backups
 
     while i<=1000:
-        p = np.random.randint(0,3)
-        if p == 0:
-            k = 0
-        elif p == 1:
-            k = 4
-        else:
-            k = 8
-            
+        # p = np.random.randint(0,3)
+        # if p == 0:
+        #     k = 0
+        # elif p == 1:
+        #     k = 4
+        # else:
+        #     k = 8
+        
         tic = time.time()
         # Compute and apply gradients.
         # compute_tasks = [worker.compute_gradients.remote(current_weights) for worker in workers]
