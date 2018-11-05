@@ -100,7 +100,7 @@ if __name__ == "__main__":
         #     k = 4
         # else:
         #     k = 8
-        
+        k = 4
         tic = time.time()
         # Compute and apply gradients.
         # compute_tasks = [worker.compute_gradients.remote(current_weights) for worker in workers]
