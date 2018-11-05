@@ -52,7 +52,8 @@ class Worker(object):
         # Measure accuracy of the epoch
         test_xs, test_ys = self.mnist.test.next_batch(1000)
         accuracy = self.net.compute_accuracy(test_xs, test_ys)
-        print("Worker {} : Iteration {} : accuracy is {}".format(self.worker_index, self.curritr, accuracy))
+        loss = self.net.compute_loss(test_xs, test_ys)
+        print("Worker {} : Iteration {} : accuracy is {} , loss is {}".format(self.worker_index, self.curritr, accuracy, loss))
         self.curritr = self.curritr + 1
         tic = time.time()
         gradients = self.net.compute_gradients(xs, ys)
@@ -93,14 +94,14 @@ if __name__ == "__main__":
     k = args.num_workers-backups
 
     while i<=1000:
-        # p = np.random.randint(0,3)
-        # if p == 0:
-        #     k = 0
-        # elif p == 1:
-        #     k = 4
-        # else:
-        #     k = 8
-        k = 8
+        p = np.random.uniform()
+        if p <= 0.2:
+            k = 0
+        elif p <= 0.7:
+            k = 4
+        else:
+            k = 8
+        
         tic = time.time()
         # Compute and apply gradients.
         # compute_tasks = [worker.compute_gradients.remote(current_weights) for worker in workers]
@@ -124,13 +125,15 @@ if __name__ == "__main__":
             net.variables.set_flat(ray.get(current_weights))
             test_xs, test_ys = mnist.test.next_batch(1000)
             accuracy = net.compute_accuracy(test_xs, test_ys)
+            toc = time.time()
+            loss = net.compute_loss(test_xs, test_ys)
+
             net.save_model(i)
 
             #retrieve list of straggling workers  from the straggler function list
             straggler_worker_IDs = [fobj_to_workerID_dict[stragglerfn_id] for stragglerfn_id in straggler_function_ids]
-
-            toc = time.time()
-            print("Iteration {} : accuracy is {} stragglers were {} ".format(i, accuracy, straggler_worker_IDs))
+            
+            print("Iteration {} : accuracy is {} , loss is {} , stragglers were {} ".format(i, accuracy, loss, straggler_worker_IDs))
             print("Time to finish Iteration {}: {}".format(i, str(toc-tic)))
             print(accuracy)
         else:
