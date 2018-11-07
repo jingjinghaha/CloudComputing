@@ -97,13 +97,13 @@ if __name__ == "__main__":
     # assume the spot price is between 0.2 and 1
 
     while i<=1000:
-        p = np.random.uniform(low=0.2, high=1.0)
-        if p < bid_price[0]:
-            k = 0
-        elif p < bid_price[-1]:
+        spot_price = np.random.uniform(low=0.2, high=1.0)
+        if spot_price >= bid_price[-1]:
+            k = 8
+        elif spot_price >= bid_price[0]:
             k = 4
         else:
-            k = 8
+            k = 0
         
         tic = time.time()
 
@@ -133,7 +133,7 @@ if __name__ == "__main__":
 
             fast_worker_IDs = [fobj_to_workerID_dict[fast_id] for fast_id in fast_function_ids]
             
-            print("Iteration {} | Time {} | Accuracy is {} | Loss is {} | fast workers were {} ".format(i, toc-tic, accuracy, loss, fast_worker_IDs))
+            print("Iteration {} | Time {} | Accuracy is {} | Loss is {} | Fast workers {} ！ Bid price {} | Spot price {}".format(i, toc-tic, accuracy, loss, fast_worker_IDs, bid_price, spot_price))
         else:
             print("Wait 0 work this iteration.")
 
