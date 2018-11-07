@@ -129,12 +129,11 @@ if __name__ == "__main__":
             toc = time.time()
             loss = net.compute_loss(test_xs, test_ys)
 
-            net.save_model(i)
+            #net.save_model(i)
 
-            #retrieve list of straggling workers  from the straggler function list
-            straggler_worker_IDs = [fobj_to_workerID_dict[stragglerfn_id] for stragglerfn_id in straggler_function_ids]
+            fast_worker_IDs = [fobj_to_workerID_dict[fast_id] for fast_id in fast_function_ids]
             
-            print("Iteration {} | Time {} | Accuracy is {} | Loss is {} | fast workers were {} ".format(i, toc-tic, accuracy, loss, straggler_worker_IDs))
+            print("Iteration {} | Time {} | Accuracy is {} | Loss is {} | fast workers were {} ".format(i, toc-tic, accuracy, loss, fast_worker_IDs))
         else:
             print("Wait 0 work this iteration.")
 
