@@ -133,10 +133,11 @@ if __name__ == "__main__":
 
             fast_worker_IDs = [fobj_to_workerID_dict[fast_id] for fast_id in fast_function_ids]
             
-            print("Iteration {} | Time {} | Accuracy is {} | Loss is {} | Fast workers {} ！ Bid price {} | Spot price {}".format(i, toc-tic, accuracy, loss, fast_worker_IDs, bid_price, spot_price))
+            print("Iteration {} | Time {} | Accuracy is {} | Loss is {} | Fast workers {} | Bid price {} | Spot price {}".format(i, toc-tic, accuracy, loss, fast_worker_IDs, bid_price, spot_price)) 
         else:
             print("Wait 0 work this iteration.")
 
         i += 1 #next iteration
 
         fast_function_ids, straggler_function_ids  = ray.wait(compute_tasks, num_returns=args.num_workers)
+
