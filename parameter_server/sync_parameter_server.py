@@ -53,12 +53,11 @@ class Worker(object):
         test_xs, test_ys = self.mnist.test.next_batch(1000)
         accuracy = self.net.compute_accuracy(test_xs, test_ys)
         loss = self.net.compute_loss(test_xs, test_ys)
-        print("Worker {} : Iteration {} : accuracy is {} , loss is {}".format(self.worker_index, self.curritr, accuracy, loss))
-        self.curritr = self.curritr + 1
         tic = time.time()
         gradients = self.net.compute_gradients(xs, ys)
         toc = time.time()
-        print("Time of computing gradients on worker {}: {}".format(self.worker_index, str(toc - tic)))
+        print("Worker {} | Iteration {} | Time {} | Accuracy is {} | Loss is {}".format(self.worker_index, self.curritr, toc - tic, accuracy, loss))
+        self.curritr = self.curritr + 1
         return gradients
 
     def getWorkerIndex(self):
@@ -87,24 +86,26 @@ if __name__ == "__main__":
 
     i = 0
     backups = args.backups #no. of stragglers, we will ignore results from them
-    print(args.num_workers, backups)
+    
     # current_weights = ps.get_weights.remote()
     current_weights = net.variables.get_flat()
 
     k = args.num_workers-backups
 
+    bid_price = [0.5, 0.5, 0.5, 0.5, 0.8, 0.8, 0.8, 0.8]
+
+    # assume the spot price is between 0.2 and 1
+
     while i<=1000:
-        p = np.random.randint(0,2)
-        if p == 0:
+        p = np.random.uniform(low=0.2, high=1.0)
+        if p < bid_price[0]:
             k = 0
-        elif p == 1:
+        elif p < bid_price[-1]:
             k = 4
         else:
-            print('wrong value')
+            k = 8
         
         tic = time.time()
-        # Compute and apply gradients.
-        # compute_tasks = [worker.compute_gradients.remote(current_weights) for worker in workers]
 
         fobj_to_workerID_dict = {} #mapping between remotefns to worker_ids
         compute_tasks = []
@@ -133,13 +134,9 @@ if __name__ == "__main__":
             #retrieve list of straggling workers  from the straggler function list
             straggler_worker_IDs = [fobj_to_workerID_dict[stragglerfn_id] for stragglerfn_id in straggler_function_ids]
             
-            print("Iteration {} : accuracy is {} , loss is {} , stragglers were {} ".format(i, accuracy, loss, straggler_worker_IDs))
-            print("Time to finish Iteration {}: {}".format(i, str(toc-tic)))
-            print(accuracy)
+            print("Iteration {} | Time {} | Accuracy is {} | Loss is {} | fast workers were {} ".format(i, toc-tic, accuracy, loss, straggler_worker_IDs))
         else:
-            print("Wait 0 work this iteration")
-            toc = time.time()
-            print("Time to finish Iteration {}: {}".format(i, str(toc-tic)))
+            print("Wait 0 work this iteration.")
 
         i += 1 #next iteration
 
