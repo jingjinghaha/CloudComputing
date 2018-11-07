@@ -98,9 +98,9 @@ if __name__ == "__main__":
 
     while i<=1000:
         spot_price = np.random.uniform(low=0.2, high=1.0)
-        if spot_price >= bid_price[-1]:
+        if spot_price <= bid_price[0]:
             k = 8
-        elif spot_price >= bid_price[0]:
+        elif spot_price <= bid_price[-1]:
             k = 4
         else:
             k = 0
