@@ -97,7 +97,8 @@ if __name__ == "__main__":
     # assume the spot price is between 0.2 and 1
 
     while i<=1000:
-        spot_price = np.random.uniform(low=0.2, high=1.0)
+        # spot_price = np.random.uniform(low=0.2, high=1.0)
+        spot_price = np.random.normal(loc=0.6, scale=0.0175)
         if spot_price <= bid_price[0]:
             k = 8
         elif spot_price <= bid_price[-1]:
@@ -135,7 +136,7 @@ if __name__ == "__main__":
             
             print("Iteration {} | Time {} | Accuracy is {} | Loss is {} | Fast workers {} | Bid price {} | Spot price {}".format(i, toc-tic, accuracy, loss, fast_worker_IDs, bid_price, spot_price)) 
         else:
-            print("Wait 0 work this iteration.")
+            print("Wait 0 work this iteration. Spot price {}".format(spot_price))
 
         i += 1 #next iteration
 
