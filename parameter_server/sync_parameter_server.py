@@ -11,9 +11,9 @@ import model
 
 parser = argparse.ArgumentParser(description="Run the synchronous parameter "
                                              "server example.")
-parser.add_argument("--num-workers", default=8, type=int,
+parser.add_argument("--num-workers", default=4, type=int,
                     help="The number of workers to use.")
-parser.add_argument("--backups", default=4, type=int,
+parser.add_argument("--backups", default=0, type=int,
                     help="The no. of stragglers, we will ignore results from them.")
 parser.add_argument("--redis-address", default=None, type=str,
                     help="The Redis address of the cluster.")
@@ -98,13 +98,13 @@ if __name__ == "__main__":
 
     while i<=1000:
         # spot_price = np.random.uniform(low=0.2, high=1.0)
-        spot_price = np.random.normal(loc=0.6, scale=0.0175)
-        if spot_price <= bid_price[0]:
-            k = 8
-        elif spot_price <= bid_price[-1]:
-            k = 4
-        else:
-            k = 0
+        # spot_price = np.random.normal(loc=0.6, scale=0.0175)
+        # if spot_price <= bid_price[0]:
+        #     k = 8
+        # elif spot_price <= bid_price[-1]:
+        #     k = 4
+        # else:
+        #     k = 0
         
         tic = time.time()
 
