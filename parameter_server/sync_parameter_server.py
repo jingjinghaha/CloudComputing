@@ -11,7 +11,7 @@ import model
 
 parser = argparse.ArgumentParser(description="Run the synchronous parameter "
                                              "server example.")
-parser.add_argument("--num-workers", default=4, type=int,
+parser.add_argument("--num-workers", default=8, type=int,
                     help="The number of workers to use.")
 parser.add_argument("--backups", default=0, type=int,
                     help="The no. of stragglers, we will ignore results from them.")
