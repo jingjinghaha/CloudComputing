@@ -66,7 +66,7 @@ class Worker(object):
 
 if __name__ == "__main__":
     args = parser.parse_args()
-
+    print("redis_address: ", args.redis_address)
     ray.init(redis_address=args.redis_address)
 
     # Create a parameter server.
