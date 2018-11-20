@@ -92,7 +92,7 @@ if __name__ == "__main__":
 
     k = args.num_workers-backups
 
-    bid_price = [0.3128765439999999, 0.78219136]
+    bid_price = [0.684080718367347, 0.7980941714285714]
 
     # assume the spot price is between 0.2 and 1
 
