@@ -84,7 +84,7 @@ if __name__ == "__main__":
     # Download MNIST.
     mnist = model.download_mnist_retry()
 
-    i = 0
+    i = 1
     backups = args.backups #no. of stragglers, we will ignore results from them
     
     # current_weights = ps.get_weights.remote()
@@ -92,13 +92,15 @@ if __name__ == "__main__":
 
     k = args.num_workers-backups
 
-    bid_price = [0.5, 0.8]
+    bid_price = [0.40858436266666665, 0.7214609066666666]
 
     # assume the spot price is between 0.2 and 1
-
+    epoch = 0
     while i<=1000:
-        #spot_price = np.random.uniform(low=0.2, high=1.0)
-        spot_price = np.random.normal(loc=0.6, scale=0.175)
+        accs = []
+        losses = []
+        spot_price = np.random.uniform(low=0.2, high=1.0)
+        #spot_price = np.random.normal(loc=0.6, scale=0.175)
         if spot_price <= bid_price[0]:
             k = 8
         elif spot_price <= bid_price[-1]:
@@ -125,16 +127,23 @@ if __name__ == "__main__":
 
             # Evaluate the current model.
             net.variables.set_flat(ray.get(current_weights))
+            toc = time.time()
             test_xs, test_ys = mnist.test.next_batch(1000)
             accuracy = net.compute_accuracy(test_xs, test_ys)
-            toc = time.time()
+            accs.append(accuracy)
             loss = net.compute_loss(test_xs, test_ys)
+            losses.append(loss)
 
             #net.save_model(i)
 
             fast_worker_IDs = [fobj_to_workerID_dict[fast_id] for fast_id in fast_function_ids]
             
             print("Iteration {} | Time {} | Accuracy is {} | Loss is {} | Fast workers {} | Bid price {} | Spot price {}".format(i, toc-tic, accuracy, loss, fast_worker_IDs, bid_price, spot_price)) 
+            if i % 120 == 0:
+                print("Epoch {} | Epoch accuracy is {} | Epoch loss is {}"
+                    .format(i / 1200, np.asarry(accs).mean(), np.asarry(losses).mean()))
+                accs = []
+                losses = []
         else:
             print("Wait 0 work this iteration. Spot price {}".format(spot_price))
 
