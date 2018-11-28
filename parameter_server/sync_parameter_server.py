@@ -141,7 +141,7 @@ if __name__ == "__main__":
             print("Iteration {} | Time {} | Accuracy is {} | Loss is {} | Fast workers {} | Bid price {} | Spot price {}".format(i, toc-tic, accuracy, loss, fast_worker_IDs, bid_price, spot_price)) 
             if i % 120 == 0:
                 print("Epoch {} | Epoch accuracy is {} | Epoch loss is {}"
-                    .format(i / 1200, np.asarry(accs).mean(), np.asarry(losses).mean()))
+                    .format(i / 1200, np.asarray(accs).mean(), np.asarray(losses).mean()))
                 accs = []
                 losses = []
         else:
