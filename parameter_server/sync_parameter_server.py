@@ -92,15 +92,15 @@ if __name__ == "__main__":
 
     k = args.num_workers-backups
 
-    bid_price = [0.488, 0.668]
+    bid_price = [0.40858436266666665, 0.7214609066666666]
 
     # assume the spot price is between 0.2 and 1
     epoch = 0
     while i<=1000:
         accs = []
         losses = []
-        #spot_price = np.random.uniform(low=0.2, high=1.0)
-        spot_price = np.random.normal(loc=0.6, scale=0.175)
+        spot_price = np.random.uniform(low=0.2, high=1.0)
+        #spot_price = np.random.normal(loc=0.6, scale=0.175)
 
         if i <= 200:
             if spot_price <= bid_price[0]:
