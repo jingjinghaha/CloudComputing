@@ -101,15 +101,19 @@ if __name__ == "__main__":
         losses = []
         #spot_price = np.random.uniform(low=0.2, high=1.0)
         spot_price = np.random.normal(loc=0.6, scale=0.175)
-        if spot_price <= bid_price[0]:
-            k = 8
-        elif spot_price <= bid_price[-1]:
-            k = 4
-        else:
-            k = 0
 
-        if i > 200 and k == 8:
-            k = 4
+        if i <= 200:
+            if spot_price <= bid_price[0]:
+                k = 8
+            elif spot_price <= bid_price[-1]:
+                k = 4
+            else:
+                k = 0
+        else:
+            if spot_price <= bid_price[0]:
+                k = 4
+            else:
+                k = 0
         
         tic = time.time()
 
