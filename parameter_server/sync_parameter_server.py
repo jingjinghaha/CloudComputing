@@ -104,15 +104,17 @@ if __name__ == "__main__":
 
     while i<=1000:
         #spot_price = np.random.uniform(low=0.2, high=1.0)
-        spot_price = np.random.normal(loc=0.6, scale=0.175)
-        if spot_price <= bid_price_low:
-            k = 8
-        elif spot_price <= bid_price_high:
-            k = 4
-        else:
-            k = 0
-            running_time += 4.015319
-            continue
+        # spot_price = np.random.normal(loc=0.6, scale=0.175)
+        # if spot_price <= bid_price_low:
+        #     k = 8
+        # elif spot_price <= bid_price_high:
+        #     k = 4
+        # else:
+        #     k = 0
+        #     running_time += 4.015319
+        #     continue
+        
+        k = 8 
         
         tic = time.time()
 
