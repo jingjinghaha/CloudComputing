@@ -90,8 +90,8 @@ if __name__ == "__main__":
 
     k = args.num_workers-backups
 
-    bid_price_low = 0.488
-    bid_price_high = 0.668
+    bid_price_low = 0.4086
+    bid_price_high = 0.7215
 
     # assume the spot price is between 0.2 and 1
     i = 1
@@ -105,16 +105,22 @@ if __name__ == "__main__":
     while i<=1000:
         spot_price = np.random.uniform(low=0.2, high=1.0)
         # spot_price = np.random.normal(loc=0.6, scale=0.175)
-        # if spot_price <= bid_price_low:
-        #     k = 8
-        # elif spot_price <= bid_price_high:
-        #     k = 4
-        # else:
-        #     k = 0
-        #     running_time += 4.015319
-        #     continue
-        
-        k = 8 
+        if i <= 200:
+            if spot_price <= bid_price_low:
+                k = 8
+            elif spot_price <= bid_price_high:
+                k = 4
+            else:
+                k = 0
+                running_time += 4.015319
+                continue
+        else:
+            if spot_price <= bid_price_low:
+                k = 4
+            else:
+                k = 0
+                running_time += 4.015319
+                continue
 
         tic = time.time()
 
