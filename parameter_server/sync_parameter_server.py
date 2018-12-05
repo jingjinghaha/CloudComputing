@@ -103,7 +103,7 @@ if __name__ == "__main__":
     losses = []
 
     while i<=1000:
-        #spot_price = np.random.uniform(low=0.2, high=1.0)
+        spot_price = np.random.uniform(low=0.2, high=1.0)
         # spot_price = np.random.normal(loc=0.6, scale=0.175)
         # if spot_price <= bid_price_low:
         #     k = 8
@@ -115,7 +115,7 @@ if __name__ == "__main__":
         #     continue
         
         k = 8 
-        
+
         tic = time.time()
 
         fobj_to_workerID_dict = {} #mapping between remotefns to worker_ids
