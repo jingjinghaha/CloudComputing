@@ -115,7 +115,7 @@ if __name__ == "__main__":
                 running_time += 4.015319
                 continue
         else:
-            if spot_price <= bid_price_high:
+            if spot_price <= bid_price_low:
                 k = 4
             else:
                 k = 0
