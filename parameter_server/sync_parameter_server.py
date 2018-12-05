@@ -112,7 +112,7 @@ if __name__ == "__main__":
         else:
             k = 0
             running_time += 4.015319
-            continue()
+            continue
         
         tic = time.time()
 
