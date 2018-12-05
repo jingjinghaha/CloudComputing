@@ -83,8 +83,6 @@ if __name__ == "__main__":
 
     # Download MNIST.
     mnist = model.download_mnist_retry()
-
-    i = 1
     backups = args.backups #no. of stragglers, we will ignore results from them
     
     # current_weights = ps.get_weights.remote()
@@ -92,30 +90,35 @@ if __name__ == "__main__":
 
     k = args.num_workers-backups
 
-    bid_price = [0.488, 0.668]
+    bid_price_low = 0.5
+    bid_price_high = 0.8
 
     # assume the spot price is between 0.2 and 1
-    epoch = 0
+    i = 1
+    epoch = 1
+    running_time = 0.0
+    epoch_time = 0.0
+    cost = 0.0
+    accs = []
+    losses = []
+
     while i<=1000:
-        accs = []
-        losses = []
-        #spot_price = np.random.uniform(low=0.2, high=1.0)
-        spot_price = np.random.normal(loc=0.6, scale=0.175)
-        if spot_price <= bid_price[0]:
+        spot_price = np.random.uniform(low=0.2, high=1.0)
+        #spot_price = np.random.normal(loc=0.6, scale=0.175)
+        if spot_price <= bid_price_low:
             k = 8
-        elif spot_price <= bid_price[-1]:
+        elif spot_price <= bid_price_high:
             k = 4
         else:
             k = 0
-
-        if i > 200 and k == 8:
-            k = 4
+            running_time += 4.015319
+            continue()
         
         tic = time.time()
 
         fobj_to_workerID_dict = {} #mapping between remotefns to worker_ids
         compute_tasks = []
-
+        
         for worker_id in range(0,args.num_workers):
             worker = workers[worker_id]
             remotefn = worker.compute_gradients.remote(current_weights)
@@ -130,23 +133,26 @@ if __name__ == "__main__":
 
             # Evaluate the current model.
             net.variables.set_flat(ray.get(current_weights))
-            toc = time.time()
+
             test_xs, test_ys = mnist.test.next_batch(1000)
             accuracy = net.compute_accuracy(test_xs, test_ys)
             accs.append(accuracy)
             loss = net.compute_loss(test_xs, test_ys)
             losses.append(loss)
 
-            #net.save_model(i)
+            toc = time.time()
+            iter_time = toc - tic
+            running_time += iter_time
+            cost += (spot_price * k * iter_time / (60 * 60))
 
-            fast_worker_IDs = [fobj_to_workerID_dict[fast_id] for fast_id in fast_function_ids]
-            
-            print("Iteration {} | Time {} | Accuracy is {} | Loss is {} | Fast workers {} | Bid price {} | Spot price {}".format(i, toc-tic, accuracy, loss, fast_worker_IDs, bid_price, spot_price)) 
-            if i % 120 == 0:
-                print("Epoch {} | Epoch accuracy is {} | Epoch loss is {}"
-                    .format(i / 1200, np.asarray(accs).mean(), np.asarray(losses).mean()))
+            #net.save_model(i)            
+            print("Iteration {} | Time {} | Accuracy is {} | Loss is {} | Wait # workers {} | Cost {}".format(i, running_time, accuracy, loss, k, cost)) 
+            if i % 100 == 0:
+                print("Epoch {} | Time {} | Epoch accuracy is {} | Epoch loss is {}"
+                    .format(epoch, running_time, np.asarray(accs).mean(), np.asarray(losses).mean()))
                 accs = []
                 losses = []
+                epoch += 1
         else:
             print("Wait 0 work this iteration. Spot price {}".format(spot_price))
 
