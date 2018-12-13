@@ -69,13 +69,12 @@ if __name__ == "__main__":
     print("redis_address: ", args.redis_address)
     ray.init(redis_address=args.redis_address)
 
-    # Create a parameter server.
     net = model.SimpleCNN()
     # net.load_model()
 
+    # Create a parameter server.
     ps = ParameterServer.remote(1e-4 * args.num_workers)
     set_weight = ps.set_weights.remote(net.variables.get_flat())
-    wait_set_weight = ray.get(set_weight)
 
     # Create workers.
     workers = [Worker.remote(worker_index)
@@ -85,15 +84,22 @@ if __name__ == "__main__":
     mnist = model.download_mnist_retry()
     backups = args.backups #no. of stragglers, we will ignore results from them
     
-    # current_weights = ps.get_weights.remote()
     current_weights = net.variables.get_flat()
 
-    k = args.num_workers-backups
+    num_workers = 0
 
-    bid_price_low = 0.488
-    bid_price_high = 0.668
+    distribution = 'uniform'
+    if distribution == 'uniform':
+        bid_price_low1 = 0.5389
+        bid_price_high1 = 0.7083
+        bid_price_low2 = 0.4086
+        bid_price_high2 = 0.7215
+    elif distribution == 'normal':
+        bid_price_low1 = 0.566
+        bid_price_high1 = 0.66
+        bid_price_low2 = 0.488
+        bid_price_high2 = 0.668
 
-    # assume the spot price is between 0.2 and 1
     i = 1
     epoch = 1
     running_time = 0.0
@@ -103,38 +109,48 @@ if __name__ == "__main__":
     losses = []
 
     while i<=1000:
-        #spot_price = np.random.uniform(low=0.2, high=1.0)
-        spot_price = np.random.normal(loc=0.6, scale=0.175)
+        if distribution == 'uniform':
+            spot_price = np.random.uniform(low=0.2, high=1.0)
+        elif distribution == 'normal':
+            spot_price = np.random.normal(loc=0.6, scale=0.175)
+
         if i <= 200:
-            if spot_price <= bid_price_low:
-                k = 8
-            elif spot_price <= bid_price_high:
-                k = 4
+            if spot_price <= bid_price_low1:
+                num_workers = 4
+            elif spot_price <= bid_price_high1:
+                num_workers = 2
             else:
-                k = 0
-                running_time += 4.015319
+                num_workers = 0
+                running_time += 3.841382
                 continue
         else:
-            if spot_price <= bid_price_low:
-                k = 4
+            if spot_price <= bid_price_low2:
+                num_workers = 4
+            elif spot_price <= bid_price_high2:
+                num_workers = 2
             else:
-                k = 0
+                num_workers = 0
                 running_time += 4.015319
                 continue
+
+        ps = ParameterServer.remote(1e-4 * num_workers)
+        set_weight = ps.set_weights.remote(net.variables.get_flat())
+        workers = [Worker.remote(worker_index)
+               for worker_index in range(num_workers)]
 
         tic = time.time()
 
         fobj_to_workerID_dict = {} #mapping between remotefns to worker_ids
         compute_tasks = []
         
-        for worker_id in range(0,args.num_workers):
+        for worker_id in range(0, num_workers):
             worker = workers[worker_id]
             remotefn = worker.compute_gradients.remote(current_weights)
             compute_tasks.append(remotefn)
             fobj_to_workerID_dict[remotefn] = worker_id
 
-        if k != 0:
-            fast_function_ids, straggler_function_ids  = ray.wait(compute_tasks, num_returns=k)
+        if num_workers != 0:
+            fast_function_ids, straggler_function_ids  = ray.wait(compute_tasks, num_returns=num_workers)
             fast_gradients = [ray.get(fast_id) for fast_id in fast_function_ids]
 
             current_weights = ps.apply_gradients.remote(*fast_gradients)
@@ -151,10 +167,10 @@ if __name__ == "__main__":
             toc = time.time()
             iter_time = toc - tic
             running_time += iter_time
-            cost += (spot_price * k * iter_time / (60 * 60))
+            cost += (spot_price * num_workers * iter_time / (60 * 60))
 
             #net.save_model(i)            
-            print("Iteration {} | Time {} | Accuracy is {} | Loss is {} | Wait # workers {} | Cost {}".format(i, running_time, accuracy, loss, k, cost)) 
+            print("Iteration {} | Time {} | Accuracy is {} | Loss is {} | Wait # workers {} | Cost {}".format(i, running_time, accuracy, loss, num_workers, cost)) 
             if i % 100 == 0:
                 print("Epoch {} | Time {} | Epoch accuracy is {} | Epoch loss is {}"
                     .format(epoch, running_time, np.asarray(accs).mean(), np.asarray(losses).mean()))
@@ -166,5 +182,4 @@ if __name__ == "__main__":
 
         i += 1 #next iteration
 
-        fast_function_ids, straggler_function_ids  = ray.wait(compute_tasks, num_returns=args.num_workers)
 
