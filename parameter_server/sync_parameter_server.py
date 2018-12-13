@@ -114,7 +114,7 @@ if __name__ == "__main__":
         elif distribution == 'normal':
             spot_price = np.random.normal(loc=0.6, scale=0.175)
 
-        if i <= 200:
+        if i <= 800:
             if spot_price <= bid_price_low1:
                 num_workers = 4
             elif spot_price <= bid_price_high1:
