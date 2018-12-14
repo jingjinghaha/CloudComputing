@@ -88,7 +88,7 @@ if __name__ == "__main__":
 
     num_workers = 0
 
-    distribution = 'uniform'
+    distribution = 'normal'
     if distribution == 'uniform':
         bid_price_low1 = 0.5389
         bid_price_high1 = 0.7083
