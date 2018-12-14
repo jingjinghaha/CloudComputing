@@ -88,17 +88,19 @@ if __name__ == "__main__":
 
     num_workers = 0
 
-    distribution = 'normal'
+    distribution = 'uniform'
     if distribution == 'uniform':
         bid_price_low1 = 0.5389
         bid_price_high1 = 0.7083
         bid_price_low2 = 0.4086
         bid_price_high2 = 0.7215
+        bid_price_8 = 0.7353
     elif distribution == 'normal':
         bid_price_low1 = 0.566
         bid_price_high1 = 0.66
         bid_price_low2 = 0.488
         bid_price_high2 = 0.668
+        bid_price_8 = 0.677
 
     i = 1
     epoch = 1
@@ -114,24 +116,31 @@ if __name__ == "__main__":
         elif distribution == 'normal':
             spot_price = np.random.normal(loc=0.6, scale=0.175)
 
-        if i <= 800:
-            if spot_price <= bid_price_low1:
-                num_workers = 4
-            elif spot_price <= bid_price_high1:
-                num_workers = 2
-            else:
-                num_workers = 0
-                running_time += 3.841382
-                continue
+        # if i <= 800:
+        #     if spot_price <= bid_price_low1:
+        #         num_workers = 4
+        #     elif spot_price <= bid_price_high1:
+        #         num_workers = 2
+        #     else:
+        #         num_workers = 0
+        #         running_time += 3.841382
+        #         continue
+        # else:
+        #     if spot_price <= bid_price_low2:
+        #         num_workers = 8
+        #     elif spot_price <= bid_price_high2:
+        #         num_workers = 4
+        #     else:
+        #         num_workers = 0
+        #         running_time += 4.015319
+        #         continue
+
+        if spot_price <= bid_price_8:
+            num_workers = 8
         else:
-            if spot_price <= bid_price_low2:
-                num_workers = 8
-            elif spot_price <= bid_price_high2:
-                num_workers = 4
-            else:
-                num_workers = 0
-                running_time += 4.015319
-                continue
+            num_workers = 0
+            running_time += 4.015319
+            continue
 
         # ps = ParameterServer.remote(1e-4 * num_workers)
         # set_weight = ps.set_weights.remote(net.variables.get_flat())
